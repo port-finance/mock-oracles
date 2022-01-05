@@ -4,12 +4,9 @@ declare_id!("FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH");
 
 #[program]
 pub mod write_account {
-    
-    
-    
     use pyth_client::{Price, PriceType};
     use quick_protobuf::serialize_into_slice;
-    use switchboard_program::{AggregatorState, RoundResult, SwitchboardAccountType};
+    use switchboard_program::{AggregatorState, FastRoundResultAccountData, RoundResult, SwitchboardAccountType};
     use switchboard_program::mod_AggregatorState::Configs;
     use super::*;
     /// Write data to an account
@@ -50,6 +47,13 @@ pub mod write_account {
             };
             aggregator.last_round_result = Some(last_round_result);
             serialize_into_slice(&aggregator, &mut account_data[1..]).unwrap();
+        } else {
+            account_data[1] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
+            let mut fast_data = FastRoundResultAccountData::default();
+            fast_data.result.result = price;
+            fast_data.result.round_open_slot = slot;
+            fast_data.result.num_success = 10;
+            account_data[1..].copy_from_slice(unsafe { &std::mem::transmute::<FastRoundResultAccountData, [u8;std::mem::size_of::<FastRoundResultAccountData>()]>(fast_data) } );
         }
         Ok(())
     }
