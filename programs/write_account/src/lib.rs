@@ -4,9 +4,9 @@ declare_id!("FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH");
 
 #[program]
 pub mod write_account {
-    use std::any::Any;
-    use anchor_lang::__private::base64::Config;
-    use anchor_lang::solana_program::short_vec::serialize;
+    
+    
+    
     use pyth_client::{Price, PriceType};
     use quick_protobuf::serialize_into_slice;
     use switchboard_program::{AggregatorState, RoundResult, SwitchboardAccountType};
@@ -36,9 +36,7 @@ pub mod write_account {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
-            let mut aggregator: AggregatorState = unsafe {
-                std::mem::zeroed()
-            };
+            let mut aggregator: AggregatorState = AggregatorState::default();
             aggregator.configs = Some(
                 Configs {
                     min_confirmations: Some(0),
