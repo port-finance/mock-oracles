@@ -8,10 +8,4 @@ describe('write_account', () => {
   anchor.setProvider(anchor.Provider.env());
 
   const program = anchor.workspace.WriteAccount as Program<WriteAccount>;
-
-  it('Is initialized!', async () => {
-    // Add your test here.
-    const tx = await program.rpc.initialize({});
-    console.log("Your transaction signature", tx);
-  });
 });
