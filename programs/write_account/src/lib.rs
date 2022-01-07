@@ -4,7 +4,7 @@ declare_id!("FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH");
 
 #[program]
 pub mod write_account {
-    use pyth_client::{Price, PriceType};
+    use pyth_client::{Price, PriceStatus, PriceType};
     use quick_protobuf::serialize_into_slice;
     use switchboard_program::{AggregatorState, FastRoundResultAccountData, RoundResult, SwitchboardAccountType};
     use switchboard_program::mod_AggregatorState::Configs;
@@ -13,7 +13,7 @@ pub mod write_account {
     pub fn write(ctx: Context<Write>, offset: u64, data: Vec<u8>) -> ProgramResult {
         let offset = offset as usize;
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
-        account_data[offset..].copy_from_slice(&data[..]);
+        account_data[offset..offset+data.len()].copy_from_slice(&data[..]);
         Ok(())
     }
 
@@ -22,10 +22,14 @@ pub mod write_account {
         let mut price_data:Price = unsafe {
             std::mem::zeroed()
         };
+        msg!("{}", price);
         price_data.ptype = PriceType::Price;
         price_data.valid_slot = slot;
         price_data.agg.price = price;
         price_data.expo = expo;
+        price_data.agg.status = PriceStatus::Trading;
+
+
         account_data.copy_from_slice( unsafe { &std::mem::transmute::<Price, [u8;std::mem::size_of::<Price>()]>(price_data) });
         Ok(())
     }

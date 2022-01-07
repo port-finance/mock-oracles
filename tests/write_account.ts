@@ -1,11 +1,14 @@
 import * as anchor from '@project-serum/anchor';
 import { WriteAccount } from '../target/types/write_account';
 import { web3 as w3 } from "@project-serum/anchor";
+import {parsePriceData} from "@pythnetwork/client";
+import {assert} from "chai";
 
 const writeAccount = anchor.workspace.WriteAccount;
 const writeAccountProgram = writeAccount as anchor.Program<WriteAccount>;
 class WriteAccountWrapper {
   static readonly programId = writeAccount.programId;
+  public readonly PYTH_PRICE_ACCOUNT_SIZE = 3312;
   provider: anchor.Provider;
 
   constructor(provider: anchor.Provider) {
@@ -44,7 +47,7 @@ class WriteAccountWrapper {
     );
   }
 
-  async write_pyth(account: w3.Keypair, price: anchor.BN, expo: anchor.BN, slot: anchor.BN) {
+  async writePythPrice(account: w3.Keypair, price: anchor.BN, expo: anchor.BN, slot: anchor.BN) {
     await writeAccountProgram.rpc.writePythPrice(
       price, expo, slot,
       {
@@ -64,9 +67,16 @@ describe('write_account', () => {
   const writeAccountWrapper = new WriteAccountWrapper(provider);
   it(
     "Write Pyth Data", async () => {
-      const pythPrice = await writeAccountWrapper.createAccount(10);
-      await writeAccountWrapper.store(pythPrice, new anchor.BN(10), Buffer.from([]) )
-
+      const pythPrice = await writeAccountWrapper.createAccount(writeAccountWrapper.PYTH_PRICE_ACCOUNT_SIZE);
+      const price = 10;
+      const expo = 0;
+      const slot = 10
+      await writeAccountWrapper.writePythPrice(pythPrice, new anchor.BN(price), new anchor.BN(expo), new anchor.BN(slot) )
+      const pythData = await provider.connection.getAccountInfo(pythPrice.publicKey);
+      const pythPriceRecord = parsePriceData(pythData.data);
+      assert(pythPriceRecord.price === price)
+      assert(pythPriceRecord.exponent === expo)
+      assert(pythPriceRecord.validSlot.toString() === slot.toString())
     }
   )
 });
