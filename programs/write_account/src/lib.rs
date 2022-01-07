@@ -32,6 +32,7 @@ pub mod write_account {
 
     pub fn write_switchboard_price(ctx: Context<Write>, price:u64, expo: u8, slot: u64, board_type: u8) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
+        let price = price as f64 / expo as f64;
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
             let mut aggregator: AggregatorState = AggregatorState::default();
@@ -42,7 +43,7 @@ pub mod write_account {
                 });
             let last_round_result = RoundResult {
                 round_open_slot: Some(slot),
-                result: Some( (price as f64) / expo as f64 ),
+                result: Some(price),
                 num_success: Some(5),
                 ..RoundResult::default()
             };
