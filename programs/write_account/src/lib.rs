@@ -10,7 +10,8 @@ pub mod write_account {
     use switchboard_program::mod_AggregatorState::Configs;
     use super::*;
     /// Write data to an account
-    pub fn write(ctx: Context<Write>, offset: usize, data: Vec<u8>) -> ProgramResult {
+    pub fn write(ctx: Context<Write>, offset: u64, data: Vec<u8>) -> ProgramResult {
+        let offset = offset as usize;
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
         account_data[offset..].copy_from_slice(&data[..]);
         Ok(())
@@ -29,7 +30,7 @@ pub mod write_account {
         Ok(())
     }
 
-    pub fn write_switchboard_price(ctx: Context<Write>, price:f64, slot: u64, board_type: u8) -> ProgramResult {
+    pub fn write_switchboard_price(ctx: Context<Write>, price:u64, expo: u8, slot: u64, board_type: u8) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
@@ -41,7 +42,7 @@ pub mod write_account {
                 });
             let last_round_result = RoundResult {
                 round_open_slot: Some(slot),
-                result: Some(price),
+                result: Some( (price as f64) / expo as f64 ),
                 num_success: Some(5),
                 ..RoundResult::default()
             };
