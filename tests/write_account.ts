@@ -9,6 +9,8 @@ const writeAccountProgram = writeAccount as anchor.Program<WriteAccount>;
 class WriteAccountWrapper {
   static readonly programId = writeAccount.programId;
   public readonly PYTH_PRICE_ACCOUNT_SIZE = 3312;
+  public readonly SWITCHBOARD_OPTIMIZED_SIZE = 105;
+
   provider: anchor.Provider;
 
   constructor(provider: anchor.Provider) {
@@ -29,7 +31,6 @@ class WriteAccountWrapper {
         space,
       }),
     );
-
     await this.provider.send(createTx, [newAccount]);
 
     return newAccount;
@@ -58,7 +59,65 @@ class WriteAccountWrapper {
       }
     )
   }
+
+  async writeSwitchboardPrice(account: w3.Keypair, price: anchor.BN, expo: anchor.BN, slot: anchor.BN, boardType: number) {
+    await writeAccountProgram.rpc.writeSwitchboardPrice(
+      price, expo, slot, boardType,
+      {
+        accounts: {
+          target: account.publicKey
+        },
+        signers: [account]
+      }
+    )
+  }
 }
+
+async function loadZeroCopyAggregator(
+  con: w3.Connection,
+  pubkey: w3.PublicKey
+): Promise<any> {
+  let buf =
+    (await con.getAccountInfo(pubkey))?.data.slice(1) ?? Buffer.from("");
+  const parent = new w3.PublicKey(buf.slice(0, 32));
+  buf = buf.slice(32);
+  const numSuccess = buf.readInt32LE(0);
+  buf = buf.slice(4);
+  const numError = buf.readInt32LE(0);
+  buf = buf.slice(4);
+  const result = buf.readDoubleLE(0);
+  buf = buf.slice(8);
+  const roundOpenSlot = buf.readBigUInt64LE(0);
+  buf = buf.slice(8);
+  const roundOpenTimestamp = buf.readBigInt64LE(0);
+  buf = buf.slice(8);
+  const minResponse = buf.readDoubleLE(0);
+  buf = buf.slice(8);
+  const maxResponse = buf.readDoubleLE(0);
+  buf = buf.slice(8);
+  const decimalMantissa = new anchor.BN(buf.slice(0, 16), "le");
+  buf = buf.slice(16);
+  const decimalScale = buf.readBigUInt64LE(0);
+  buf = buf.slice(8);
+  return {
+    parent,
+    result: {
+      numSuccess,
+      numError,
+      result,
+      roundOpenSlot,
+      roundOpenTimestamp,
+      minResponse,
+      maxResponse,
+      decimal: {
+        mantissa: decimalMantissa,
+        scale: decimalScale,
+      },
+    },
+  };
+}
+
+
 describe('write_account', () => {
 
   // Configure the client to use the local cluster.
@@ -67,16 +126,30 @@ describe('write_account', () => {
   const writeAccountWrapper = new WriteAccountWrapper(provider);
   it(
     "Write Pyth Data", async () => {
-      const pythPrice = await writeAccountWrapper.createAccount(writeAccountWrapper.PYTH_PRICE_ACCOUNT_SIZE);
+      const pythPriceKeypair = await writeAccountWrapper.createAccount(writeAccountWrapper.PYTH_PRICE_ACCOUNT_SIZE);
       const price = 10;
       const expo = 0;
-      const slot = 10
-      await writeAccountWrapper.writePythPrice(pythPrice, new anchor.BN(price), new anchor.BN(expo), new anchor.BN(slot) )
-      const pythData = await provider.connection.getAccountInfo(pythPrice.publicKey);
+      const slot = 10;
+      await writeAccountWrapper.writePythPrice(pythPriceKeypair, new anchor.BN(price), new anchor.BN(expo), new anchor.BN(slot) )
+      const pythData = await provider.connection.getAccountInfo(pythPriceKeypair.publicKey);
       const pythPriceRecord = parsePriceData(pythData.data);
       assert(pythPriceRecord.price === price)
       assert(pythPriceRecord.exponent === expo)
       assert(pythPriceRecord.validSlot.toString() === slot.toString())
+    }
+  )
+
+  it(
+    "Write SwitchBoard Data", async () => {
+      const switchBoardKeypair = await writeAccountWrapper
+        .createAccount(writeAccountWrapper.SWITCHBOARD_OPTIMIZED_SIZE);
+      const price = 10;
+      const expo = 0;
+      const slot = 10;
+      await writeAccountWrapper.writeSwitchboardPrice(switchBoardKeypair, new anchor.BN(price), new anchor.BN(expo), new anchor.BN(slot),1);
+      const switchboardPrice = await loadZeroCopyAggregator(provider.connection, switchBoardKeypair.publicKey)
+      assert(switchboardPrice.result.result.toString() === price.toString())
+      assert(switchboardPrice.result.roundOpenSlot.toString() === slot.toString())
     }
   )
 });

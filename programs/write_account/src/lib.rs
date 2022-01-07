@@ -22,7 +22,6 @@ pub mod write_account {
         let mut price_data:Price = unsafe {
             std::mem::zeroed()
         };
-        msg!("{}", price);
         price_data.ptype = PriceType::Price;
         price_data.valid_slot = slot;
         price_data.agg.price = price;
@@ -36,7 +35,7 @@ pub mod write_account {
 
     pub fn write_switchboard_price(ctx: Context<Write>, price:u64, expo: u8, slot: u64, board_type: u8) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
-        let price = price as f64 / expo as f64;
+        let price = price as f64 * (10u32.pow(expo as u32) as f64);
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
             let mut aggregator: AggregatorState = AggregatorState::default();
@@ -54,7 +53,7 @@ pub mod write_account {
             aggregator.last_round_result = Some(last_round_result);
             serialize_into_slice(&aggregator, &mut account_data[1..]).unwrap();
         } else {
-            account_data[1] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
+            account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
             let mut fast_data = FastRoundResultAccountData::default();
             fast_data.result.result = price;
             fast_data.result.round_open_slot = slot;
