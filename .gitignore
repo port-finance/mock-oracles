@@ -10,6 +10,7 @@ node_modules
 .anchor
 yarn-error.log
 lerna-debug.log
+.eslintcache
 
 # Generated IDL types
 artifacts/
