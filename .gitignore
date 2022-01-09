@@ -1,7 +1,18 @@
 
-.anchor
 .DS_Store
 target
 **/*.rs.bk
+**/*.js
 node_modules
 .idea
+
+# Ignore logs
+.anchor
+yarn-error.log
+lerna-debug.log
+.eslintcache
+
+# Generated IDL types
+artifacts/
+dist/
+src/idls/

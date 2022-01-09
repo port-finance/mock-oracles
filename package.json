@@ -1,13 +1,26 @@
 {
+    "name": "@port.finance/mock-oracles",
+    "version": "0.0.1",
+    "description": "On-chain program to mock writing Pyth and Switchboard Accounts.",
+    "scripts": {
+        "idl:generate": "./scripts/parse-idls.sh && ./scripts/generate-idl-types.sh",
+        "lint": "eslint tests --cache && eslint src --cache && prettier --write '{tests,src}/**/*.ts'",
+        "lint:ci": "eslint tests --max-warnings=0 && eslint src --max-warnings=0 && prettier -c '{tests,src}/**/*.ts'"
+    },
     "dependencies": {
         "@project-serum/anchor": "^0.20.0",
-        "@pythnetwork/client": "^2.5.1"
+        "@pythnetwork/client": "^2.5.1",
+        "@saberhq/anchor-contrib": "^1.12.20"
     },
     "devDependencies": {
         "@types/chai": "^4.3.0",
         "@types/mocha": "^9.0.0",
+        "@typescript-eslint/eslint-plugin": "^5.9.0",
+        "@typescript-eslint/parser": "^5.9.0",
         "chai": "^4.3.4",
+        "eslint": "^8.6.0",
         "mocha": "^8.4.0",
+        "prettier": "^2.5.1",
         "ts-mocha": "^8.0.0",
         "typescript": "^4.3.5"
     }
