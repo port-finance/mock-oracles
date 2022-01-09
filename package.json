@@ -1,4 +1,7 @@
 {
+    "name": "@port.finance/mock-oracles",
+    "version": "0.0.1",
+    "description": "On-chain program to mock writing Pyth and Switchboard Accounts.",
     "scripts": {
         "idl:generate": "./scripts/parse-idls.sh && ./scripts/generate-idl-types.sh"
     },
