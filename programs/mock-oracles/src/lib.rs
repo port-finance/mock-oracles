@@ -50,11 +50,13 @@ pub mod mock_oracles {
         let price = price as f64 * (10u32.pow(expo as u32) as f64);
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
-            let mut aggregator: AggregatorState = AggregatorState::default();
-            aggregator.configs = Some(Configs {
-                min_confirmations: Some(0),
-                ..Configs::default()
-            });
+            let mut aggregator: AggregatorState = switchboard_program::AggregatorState {
+                configs: Some(Configs {
+                    min_confirmations: Some(0),
+                    ..Configs::default()
+                }),
+                ..Default::default()
+            };
             let last_round_result = RoundResult {
                 round_open_slot: Some(slot),
                 result: Some(price),
