@@ -22,7 +22,7 @@
         "@typescript-eslint/eslint-plugin": "^5.9.0",
         "@typescript-eslint/parser": "^5.9.0",
         "chai": "^4.3.4",
-        "eslint": "^8.6.0",
+        "eslint": "^8.2.0",
         "mocha": "^8.4.0",
         "prettier": "^2.5.1",
         "ts-mocha": "^8.0.0",
