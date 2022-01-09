@@ -65,6 +65,8 @@ jobs:
           npm i -g @project-serum/anchor-cli
       - name: Build Self
         run: anchor build
+      - name: Lint TS
+        run: yarn lint:ci
       - name: Generate IDL
         run: yarn idl:generate
       - name: Build SDK
