@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 declare_id!("FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH");
 
 #[program]
-pub mod write_account {
+pub mod mock_oracles {
     use pyth_client::{Price, PriceStatus, PriceType};
     use quick_protobuf::serialize_into_slice;
     use switchboard_program::{AggregatorState, FastRoundResultAccountData, RoundResult, SwitchboardAccountType};

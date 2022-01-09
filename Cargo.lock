@@ -700,6 +700,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mock-oracles"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "pyth-client",
+ "quick-protobuf",
+ "switchboard-program",
+]
+
+[[package]]
 name = "num-derive"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1338,16 +1348,6 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
-
-[[package]]
-name = "write_account"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "pyth-client",
- "quick-protobuf",
- "switchboard-program",
-]
 
 [[package]]
 name = "yansi"

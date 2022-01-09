@@ -1,12 +1,12 @@
 [package]
-name = "write_account"
+name = "mock-oracles"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "write_account"
+name = "mock_oracles"
 
 [features]
 no-entrypoint = []
