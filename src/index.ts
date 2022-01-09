@@ -1,7 +1,12 @@
-import { Program, Provider } from '@project-serum/anchor';
-import { Keypair, PublicKey, Transaction, SystemProgram } from "@solana/web3.js"
-import BN from 'bn.js';
-import { MockOraclesIDL, MockOraclesJSON } from './idls/mock_oracles';
+import { Program, Provider } from "@project-serum/anchor";
+import {
+  Keypair,
+  PublicKey,
+  Transaction,
+  SystemProgram,
+} from "@solana/web3.js";
+import BN from "bn.js";
+import { MockOraclesIDL, MockOraclesJSON } from "./idls/mock_oracles";
 
 export class MockOraclesWrapper {
   public readonly PYTH_PRICE_ACCOUNT_SIZE = 3312;
@@ -10,11 +15,7 @@ export class MockOraclesWrapper {
   private readonly program: Program<MockOraclesIDL>;
 
   constructor(provider: Provider, programAddress: PublicKey) {
-    this.program = new Program(
-      MockOraclesJSON,
-      programAddress,
-      provider
-    );
+    this.program = new Program(MockOraclesJSON, programAddress, provider);
   }
 
   async createAccount(space: number): Promise<Keypair> {
@@ -26,10 +27,10 @@ export class MockOraclesWrapper {
         programId: this.program.programId,
         lamports:
           await this.program.provider.connection.getMinimumBalanceForRentExemption(
-            space,
+            space
           ),
         space,
-      }),
+      })
     );
     await this.program.provider.send(createTx, [newAccount]);
 
@@ -37,38 +38,35 @@ export class MockOraclesWrapper {
   }
 
   async store(account: Keypair, offset: BN, input: Buffer) {
-    await this.program.rpc.write(
-      offset, input,
-      {
-        accounts: {
-          target: account.publicKey
-        },
-        signers: [account]
-      }
-    );
+    await this.program.rpc.write(offset, input, {
+      accounts: {
+        target: account.publicKey,
+      },
+      signers: [account],
+    });
   }
 
   async writePythPrice(account: Keypair, price: BN, expo: BN, slot: BN) {
-    await this.program.rpc.writePythPrice(
-      price, expo, slot,
-      {
-        accounts: {
-          target: account.publicKey
-        },
-        signers: [account]
-      }
-    )
+    await this.program.rpc.writePythPrice(price, expo, slot, {
+      accounts: {
+        target: account.publicKey,
+      },
+      signers: [account],
+    });
   }
 
-  async writeSwitchboardPrice(account: Keypair, price: BN, expo: BN, slot: BN, boardType: number) {
-    await this.program.rpc.writeSwitchboardPrice(
-      price, expo, slot, boardType,
-      {
-        accounts: {
-          target: account.publicKey
-        },
-        signers: [account]
-      }
-    )
+  async writeSwitchboardPrice(
+    account: Keypair,
+    price: BN,
+    expo: BN,
+    slot: BN,
+    boardType: number
+  ) {
+    await this.program.rpc.writeSwitchboardPrice(price, expo, slot, boardType, {
+      accounts: {
+        target: account.publicKey,
+      },
+      signers: [account],
+    });
   }
 }

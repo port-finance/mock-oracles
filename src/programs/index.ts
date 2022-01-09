@@ -1,1 +1,1 @@
-export * from './mock-oracles'
+export * from "./mock-oracles";
