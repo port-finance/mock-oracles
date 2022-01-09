@@ -1,4 +1,4 @@
-name: Sundial Program
+name: Mock Oracles Program
 
 on:
   push:
