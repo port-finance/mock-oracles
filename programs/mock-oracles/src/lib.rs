@@ -32,6 +32,7 @@ pub mod mock_oracles {
         price_data.agg.price = price;
         price_data.expo = expo;
         price_data.agg.status = PriceStatus::Trading;
+
         account_data.copy_from_slice(unsafe {
             &std::mem::transmute::<Price, [u8; std::mem::size_of::<Price>()]>(price_data)
         });
@@ -50,12 +51,14 @@ pub mod mock_oracles {
         let price = price as f64 * (10u32.pow(expo as u32) as f64);
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
-            let mut aggregator: AggregatorState = AggregatorState::default();
+            let mut aggregator: AggregatorState = switchboard_program::AggregatorState {
+                configs: Some(Configs {
+                    min_confirmations: Some(0),
+                    ..Configs::default()
+                }),
+                ..Default::default()
+            };
 
-            aggregator.configs = Some(Configs {
-                min_confirmations: Some(0),
-                ..Configs::default()
-            });
             let last_round_result = RoundResult {
                 round_open_slot: Some(slot),
                 result: Some(price),

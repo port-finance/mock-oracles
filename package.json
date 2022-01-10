@@ -1,11 +1,16 @@
 {
     "name": "@port.finance/mock-oracles",
     "version": "0.0.1",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
     "description": "On-chain program to mock writing Pyth and Switchboard Accounts.",
+    "license": "AGPL-3.0",
     "scripts": {
+        "build": "rm -fr dist/ && tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
         "idl:generate": "./scripts/parse-idls.sh && ./scripts/generate-idl-types.sh",
-        "lint": "eslint tests --cache && eslint src --cache && prettier --write '{tests,src}/**/*.ts'",
-        "lint:ci": "eslint tests --max-warnings=0 && eslint src --max-warnings=0 && prettier -c '{tests,src}/**/*.ts'"
+        "lint": "eslint 'src/**/*.ts' --cache && eslint 'tests/**/*.ts' --cache && prettier --write '{tests,src}/**/*.ts'",
+        "lint:ci": "eslint '{src,tests}/**/*.ts' --max-warnings=0",
+        "test:e2e": "anchor test --skip-build 'tests/**/*.ts'"
     },
     "dependencies": {
         "@project-serum/anchor": "^0.20.0",
@@ -23,5 +28,16 @@
         "prettier": "^2.5.1",
         "ts-mocha": "^8.0.0",
         "typescript": "^4.3.5"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist/",
+        "src/"
+    ],
+    "lint-staged": {
+        "*.{ts,tsx}": "eslint --cache --fix",
+        "*.{js,json,jsx,html,css,md}": "prettier --write"
     }
 }
