@@ -33,12 +33,14 @@ pub mod mock_oracles {
         Ok(())
     }
 
+    #[allow(clippy::field_reassign_with_default)]
     pub fn write_switchboard_price(ctx: Context<Write>, price:u64, expo: u8, slot: u64, board_type: u8) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
         let price = price as f64 * (10u32.pow(expo as u32) as f64);
         if board_type == 0 {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR as u8;
             let mut aggregator: AggregatorState = AggregatorState::default();
+
             aggregator.configs = Some(
                 Configs {
                     min_confirmations: Some(0),
