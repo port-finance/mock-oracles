@@ -39,6 +39,7 @@ pub mod mock_oracles {
         Ok(())
     }
 
+    #[allow(clippy::field_reassign_with_default)]
     pub fn write_switchboard_price(
         ctx: Context<Write>,
         price: u64,
@@ -57,6 +58,7 @@ pub mod mock_oracles {
                 }),
                 ..Default::default()
             };
+
             let last_round_result = RoundResult {
                 round_open_slot: Some(slot),
                 result: Some(price),
