@@ -27,8 +27,6 @@ pub mod mock_oracles {
         price_data.agg.price = price;
         price_data.expo = expo;
         price_data.agg.status = PriceStatus::Trading;
-
-
         account_data.copy_from_slice( unsafe { &std::mem::transmute::<Price, [u8;std::mem::size_of::<Price>()]>(price_data) });
         Ok(())
     }
