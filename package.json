@@ -9,7 +9,7 @@
         "build": "rm -fr dist/ && tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
         "idl:generate": "./scripts/parse-idls.sh && ./scripts/generate-idl-types.sh",
         "lint": "eslint . --cache && prettier --write '{tests,src}/**/*.ts'",
-        "lint:ci": "eslint tests --max-warnings=0 && eslint src --max-warnings=0"
+        "lint:ci": "eslint . --max-warnings=0"
     },
     "dependencies": {
         "@project-serum/anchor": "^0.20.0",
