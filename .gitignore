@@ -2,7 +2,6 @@
 .DS_Store
 target
 **/*.rs.bk
-**/*.js
 node_modules
 .idea
 
