@@ -46,7 +46,12 @@ export class MockOraclesWrapper {
     });
   }
 
-  async writePythPrice(account: Keypair, price: BN, expo: BN, slot: BN) {
+  async writePythPrice(
+    account: Keypair,
+    price: BN,
+    slot: BN,
+    expo: BN = new BN(0)
+  ) {
     await this.program.rpc.writePythPrice(price, expo, slot, {
       accounts: {
         target: account.publicKey,
@@ -57,10 +62,10 @@ export class MockOraclesWrapper {
 
   async writeSwitchboardPrice(
     account: Keypair,
+    boardType: number,
     price: BN,
-    expo: BN,
     slot: BN,
-    boardType: number
+    expo: BN = new BN(0)
   ) {
     await this.program.rpc.writeSwitchboardPrice(price, expo, slot, boardType, {
       accounts: {

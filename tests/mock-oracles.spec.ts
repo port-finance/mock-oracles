@@ -64,12 +64,10 @@ describe("Test Mock Oracles", () => {
       writeAccountWrapper.PYTH_PRICE_ACCOUNT_SIZE
     );
     const price = 10;
-    const expo = 0;
     const slot = 10;
     await writeAccountWrapper.writePythPrice(
       pythPriceKeypair,
       new anchor.BN(price),
-      new anchor.BN(expo),
       new anchor.BN(slot)
     );
     const pythData = await provider.connection.getAccountInfo(
@@ -77,7 +75,7 @@ describe("Test Mock Oracles", () => {
     );
     const pythPriceRecord = parsePriceData(pythData.data);
     assert(pythPriceRecord.price === price);
-    assert(pythPriceRecord.exponent === expo);
+    assert(pythPriceRecord.exponent === 0);
     assert(pythPriceRecord.validSlot.toString() === slot.toString());
   });
 
@@ -86,14 +84,12 @@ describe("Test Mock Oracles", () => {
       writeAccountWrapper.SWITCHBOARD_OPTIMIZED_SIZE
     );
     const price = 10;
-    const expo = 0;
     const slot = 10;
     await writeAccountWrapper.writeSwitchboardPrice(
       switchBoardKeypair,
+      1,
       new anchor.BN(price),
-      new anchor.BN(expo),
-      new anchor.BN(slot),
-      1
+      new anchor.BN(slot)
     );
     const switchboardPrice = await loadZeroCopyAggregator(
       provider.connection,
