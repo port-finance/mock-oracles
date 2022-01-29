@@ -69,13 +69,21 @@ describe("Test Mock Oracles", () => {
       price: new anchor.BN(price),
       slot: new anchor.BN(slot),
     });
-    const pythData = await provider.connection.getAccountInfo(
+    let pythData = await provider.connection.getAccountInfo(
       pythPriceKeypair.publicKey
     );
-    const pythPriceRecord = parsePriceData(pythData.data);
+    let pythPriceRecord = parsePriceData(pythData.data);
     assert(pythPriceRecord.price === price);
     assert(pythPriceRecord.exponent === 0);
     assert(pythPriceRecord.validSlot.toString() === slot.toString());
+    await writeAccountWrapper.writePythPrice(pythPriceKeypair, {
+      price: new anchor.BN(price*2),
+    });
+    pythData = await provider.connection.getAccountInfo(
+      pythPriceKeypair.publicKey
+    );
+    pythPriceRecord = parsePriceData(pythData.data);
+    assert(pythPriceRecord.price === price);
   });
 
   it("Write SwitchBoard Data", async () => {
