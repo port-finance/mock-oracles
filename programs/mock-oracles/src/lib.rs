@@ -9,7 +9,10 @@ pub mod mock_oracles {
     use quick_protobuf::serialize_into_slice;
     use std::convert::TryInto;
     use switchboard_program::mod_AggregatorState::Configs;
-    use switchboard_program::{AggregatorState, FastRoundResultAccountData, get_aggregator, get_aggregator_result, RoundResult, SwitchboardAccountType};
+    use switchboard_program::{
+        get_aggregator, get_aggregator_result, AggregatorState, FastRoundResultAccountData,
+        RoundResult, SwitchboardAccountType,
+    };
     /// Write data to an account
     pub fn write(ctx: Context<Write>, offset: u64, data: Vec<u8>) -> ProgramResult {
         let offset = offset as usize;
@@ -80,7 +83,7 @@ pub mod mock_oracles {
         } else {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
             let result = FastRoundResultAccountData::deserialize(&account_data[1..])
-                .unwrap_or( FastRoundResultAccountData::default());
+                .unwrap_or(FastRoundResultAccountData::default());
             let mut fast_data = FastRoundResultAccountData::default();
             fast_data.result.result = if price < 0.0 {
                 result.result.result
