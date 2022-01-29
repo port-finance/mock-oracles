@@ -9,7 +9,7 @@ pub mod mock_oracles {
     use quick_protobuf::serialize_into_slice;
     use std::convert::TryInto;
     use switchboard_program::mod_AggregatorState::Configs;
-    use switchboard_program::{AggregatorState, fast_parse_switchboard_result, FastRoundResultAccountData, get_aggregator, get_aggregator_result, RoundResult, SwitchboardAccountType};
+    use switchboard_program::{AggregatorState, FastRoundResultAccountData, get_aggregator, get_aggregator_result, RoundResult, SwitchboardAccountType};
     /// Write data to an account
     pub fn write(ctx: Context<Write>, offset: u64, data: Vec<u8>) -> ProgramResult {
         let offset = offset as usize;
