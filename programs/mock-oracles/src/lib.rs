@@ -23,7 +23,7 @@ pub mod mock_oracles {
 
     pub fn write_pyth_price(ctx: Context<Write>, price: i64, expo: u8, slot: i64) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
-        let exist_price_data = cast::<Price>(&account_data).clone();
+        let exist_price_data = cast::<Price>(&account_data);
 
         let mut price_data: Price = unsafe { std::mem::zeroed() };
         price_data.ptype = PriceType::Price;
@@ -83,7 +83,7 @@ pub mod mock_oracles {
         } else {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
             let result = FastRoundResultAccountData::deserialize(&account_data[1..])
-                .unwrap_or(FastRoundResultAccountData::default());
+                .unwrap_or_default();
             let mut fast_data = FastRoundResultAccountData::default();
             fast_data.result.result = if price < 0.0 {
                 result.result.result
