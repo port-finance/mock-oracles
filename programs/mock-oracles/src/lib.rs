@@ -7,6 +7,7 @@ pub mod mock_oracles {
     use super::*;
     use pyth_client::{Price, PriceStatus, PriceType};
     use quick_protobuf::serialize_into_slice;
+    use std::convert::TryInto;
     use switchboard_program::mod_AggregatorState::Configs;
     use switchboard_program::{
         AggregatorState, FastRoundResultAccountData, RoundResult, SwitchboardAccountType,
@@ -19,18 +20,17 @@ pub mod mock_oracles {
         Ok(())
     }
 
-    pub fn write_pyth_price(
-        ctx: Context<Write>,
-        price: i64,
-        expo: i32,
-        slot: u64,
-    ) -> ProgramResult {
+    pub fn write_pyth_price(ctx: Context<Write>, price: i64, expo: u8, slot: i64) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
         let mut price_data: Price = unsafe { std::mem::zeroed() };
         price_data.ptype = PriceType::Price;
-        price_data.valid_slot = slot;
-        price_data.agg.price = price;
-        price_data.expo = expo;
+        price_data.valid_slot = slot.try_into().unwrap_or(price_data.valid_slot);
+        price_data.agg.price = if price < 0 {
+            price_data.agg.price
+        } else {
+            price
+        };
+        price_data.expo = expo as i32;
         price_data.agg.status = PriceStatus::Trading;
 
         account_data.copy_from_slice(unsafe {
@@ -42,9 +42,9 @@ pub mod mock_oracles {
     #[allow(clippy::field_reassign_with_default)]
     pub fn write_switchboard_price(
         ctx: Context<Write>,
-        price: u64,
+        price: i64,
         expo: u8,
-        slot: u64,
+        slot: i64,
         board_type: u8,
     ) -> ProgramResult {
         let account_data = &mut ctx.accounts.target.try_borrow_mut_data()?;
@@ -60,8 +60,20 @@ pub mod mock_oracles {
             };
 
             let last_round_result = RoundResult {
-                round_open_slot: Some(slot),
-                result: Some(price),
+                round_open_slot: if slot < 0 {
+                    aggregator
+                        .last_round_result
+                        .clone()
+                        .unwrap()
+                        .round_open_slot
+                } else {
+                    Some(slot as u64)
+                },
+                result: if price < 0.0 {
+                    aggregator.last_round_result.unwrap().result
+                } else {
+                    Some(price)
+                },
                 num_success: Some(5),
                 ..RoundResult::default()
             };
@@ -70,8 +82,16 @@ pub mod mock_oracles {
         } else {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
             let mut fast_data = FastRoundResultAccountData::default();
-            fast_data.result.result = price;
-            fast_data.result.round_open_slot = slot;
+            fast_data.result.result = if price < 0.0 {
+                fast_data.result.result
+            } else {
+                price
+            };
+            fast_data.result.round_open_slot = if slot < 0 {
+                fast_data.result.round_open_slot
+            } else {
+                slot as u64
+            };
             fast_data.result.num_success = 10;
             account_data[1..].copy_from_slice(unsafe {
                 &std::mem::transmute::<

@@ -65,11 +65,10 @@ describe("Test Mock Oracles", () => {
     );
     const price = 10;
     const slot = 10;
-    await writeAccountWrapper.writePythPrice(
-      pythPriceKeypair,
-      new anchor.BN(price),
-      new anchor.BN(slot)
-    );
+    await writeAccountWrapper.writePythPrice(pythPriceKeypair, {
+      price: new anchor.BN(price),
+      slot: new anchor.BN(slot),
+    });
     const pythData = await provider.connection.getAccountInfo(
       pythPriceKeypair.publicKey
     );
@@ -85,12 +84,10 @@ describe("Test Mock Oracles", () => {
     );
     const price = 10;
     const slot = 10;
-    await writeAccountWrapper.writeSwitchboardPrice(
-      switchBoardKeypair,
-      1,
-      new anchor.BN(price),
-      new anchor.BN(slot)
-    );
+    await writeAccountWrapper.writeSwitchboardPrice(switchBoardKeypair, 1, {
+      price: new anchor.BN(price),
+      slot: new anchor.BN(slot),
+    });
     const switchboardPrice = await loadZeroCopyAggregator(
       provider.connection,
       switchBoardKeypair.publicKey
