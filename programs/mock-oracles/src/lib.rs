@@ -82,8 +82,8 @@ pub mod mock_oracles {
             serialize_into_slice(&aggregator, &mut account_data[1..]).unwrap();
         } else {
             account_data[0] = SwitchboardAccountType::TYPE_AGGREGATOR_RESULT_PARSE_OPTIMIZED as u8;
-            let result = FastRoundResultAccountData::deserialize(&account_data[1..])
-                .unwrap_or_default();
+            let result =
+                FastRoundResultAccountData::deserialize(&account_data[1..]).unwrap_or_default();
             let mut fast_data = FastRoundResultAccountData::default();
             fast_data.result.result = if price < 0.0 {
                 result.result.result

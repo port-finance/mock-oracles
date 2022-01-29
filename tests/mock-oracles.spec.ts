@@ -77,22 +77,22 @@ describe("Test Mock Oracles", () => {
     assert(pythPriceRecord.exponent === 0);
     assert(pythPriceRecord.validSlot.toString() === slot.toString());
     await writeAccountWrapper.writePythPrice(pythPriceKeypair, {
-      price: new anchor.BN(price*2),
+      price: new anchor.BN(price * 2),
     });
     pythData = await provider.connection.getAccountInfo(
       pythPriceKeypair.publicKey
     );
     pythPriceRecord = parsePriceData(pythData.data);
-    assert(pythPriceRecord.price === price*2);
+    assert(pythPriceRecord.price === price * 2);
 
     await writeAccountWrapper.writePythPrice(pythPriceKeypair, {
-      slot: new anchor.BN(slot*2),
+      slot: new anchor.BN(slot * 2),
     });
     pythData = await provider.connection.getAccountInfo(
       pythPriceKeypair.publicKey
     );
     pythPriceRecord = parsePriceData(pythData.data);
-    assert(pythPriceRecord.validSlot.toString() === (slot*2).toString());
+    assert(pythPriceRecord.validSlot.toString() === (slot * 2).toString());
   });
 
   it("Write SwitchBoard Data", async () => {
@@ -114,22 +114,24 @@ describe("Test Mock Oracles", () => {
       switchboardPrice.result.roundOpenSlot.toString() === slot.toString()
     );
     await writeAccountWrapper.writeSwitchboardPrice(switchBoardKeypair, 1, {
-      price: new anchor.BN(price*2),
-    });
-    switchboardPrice = await loadZeroCopyAggregator(
-      provider.connection,
-      switchBoardKeypair.publicKey
-    );
-    assert(switchboardPrice.result.result.toString() === (price*2).toString());
-    await writeAccountWrapper.writeSwitchboardPrice(switchBoardKeypair, 1, {
-      slot: new anchor.BN(slot*2),
+      price: new anchor.BN(price * 2),
     });
     switchboardPrice = await loadZeroCopyAggregator(
       provider.connection,
       switchBoardKeypair.publicKey
     );
     assert(
-      switchboardPrice.result.roundOpenSlot.toString() === (slot*2).toString()
+      switchboardPrice.result.result.toString() === (price * 2).toString()
+    );
+    await writeAccountWrapper.writeSwitchboardPrice(switchBoardKeypair, 1, {
+      slot: new anchor.BN(slot * 2),
+    });
+    switchboardPrice = await loadZeroCopyAggregator(
+      provider.connection,
+      switchBoardKeypair.publicKey
+    );
+    assert(
+      switchboardPrice.result.roundOpenSlot.toString() === (slot * 2).toString()
     );
   });
 });
