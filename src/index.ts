@@ -7,7 +7,11 @@ import {
 } from "@solana/web3.js";
 import BN from "bn.js";
 import { MockOraclesIDL, MockOraclesJSON } from "./idls/mock_oracles";
-
+export interface OracleData {
+  price?: BN;
+  slot?: BN;
+  expo?: number;
+}
 export class MockOraclesWrapper {
   public readonly PYTH_PRICE_ACCOUNT_SIZE = 3312;
   public readonly SWITCHBOARD_OPTIMIZED_SIZE = 105;
@@ -48,9 +52,7 @@ export class MockOraclesWrapper {
 
   async writePythPrice(
     account: Keypair,
-    price: BN,
-    slot: BN,
-    expo: BN = new BN(0)
+    { price = new BN(-1), slot = new BN(-1), expo = 0 }: OracleData
   ) {
     await this.program.rpc.writePythPrice(price, expo, slot, {
       accounts: {
@@ -63,9 +65,7 @@ export class MockOraclesWrapper {
   async writeSwitchboardPrice(
     account: Keypair,
     boardType: number,
-    price: BN,
-    slot: BN,
-    expo: BN = new BN(0)
+    { price = new BN(-1), slot = new BN(-1), expo = 0 }: OracleData
   ) {
     await this.program.rpc.writeSwitchboardPrice(price, expo, slot, boardType, {
       accounts: {
