@@ -1,6 +1,6 @@
 {
     "name": "@port.finance/mock-oracles",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "description": "On-chain program to mock writing Pyth and Switchboard Accounts.",
