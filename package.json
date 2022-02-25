@@ -1,11 +1,12 @@
 {
     "name": "@port.finance/mock-oracles",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "description": "On-chain program to mock writing Pyth and Switchboard Accounts.",
     "license": "AGPL-3.0",
     "scripts": {
+        "prebuild": "yarn idl:generate",
         "build": "rm -fr dist/ && tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
         "idl:generate": "./scripts/parse-idls.sh && ./scripts/generate-idl-types.sh",
         "lint": "eslint 'src/**/*.ts' --cache && eslint 'tests/**/*.ts' --cache && prettier --write '{tests,src}/**/*.ts'",
@@ -13,9 +14,9 @@
         "test:e2e": "anchor test --skip-build 'tests/**/*.ts'"
     },
     "dependencies": {
-        "@project-serum/anchor": "^0.20.0",
+        "@project-serum/anchor": "~0.18.0",
         "@pythnetwork/client": "^2.5.1",
-        "@saberhq/anchor-contrib": "^1.12.20"
+        "@saberhq/anchor-contrib": "1.10.4"
     },
     "devDependencies": {
         "@types/chai": "^4.3.0",
@@ -28,6 +29,9 @@
         "prettier": "^2.5.1",
         "ts-mocha": "^8.0.0",
         "typescript": "^4.3.5"
+    },
+    "peerDependencies": {
+        "@saberhq/solana-contrib": "1.10.4"
     },
     "publishConfig": {
         "access": "public"
